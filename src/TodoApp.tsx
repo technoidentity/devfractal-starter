@@ -1,5 +1,4 @@
-import { boolean, number, string, TypeOf, union } from 'io-ts'
-import { date, DateFromISOString } from 'io-ts-types'
+import { boolean, number, string, TypeOf } from 'io-ts'
 import React from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
 import { Switch } from 'react-router'
@@ -22,19 +21,12 @@ import {
 } from 'technoidentity-devfractal'
 import { fn, props, req } from 'technoidentity-utils'
 
-const ISODate = union([date, DateFromISOString])
-
-const Todo = req({
-  id: number,
-  title: string,
-  scheduled: ISODate,
-  done: boolean,
-})
+const Todo = req({ id: number, title: string, completed: boolean })
 
 type Todo = TypeOf<typeof Todo>
 
 const todoApi = rest({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://jsonplaceholder.typicode.com',
   resource: 'todos',
   type: Todo,
 })
@@ -42,8 +34,7 @@ const todoApi = rest({
 const initialValues: Todo = {
   id: 100,
   title: '',
-  scheduled: new Date(),
-  done: false,
+  completed: false,
 }
 
 export const TodoFormProps = props(
@@ -91,7 +82,13 @@ interface TodoListViewProps {
 export const TodoListView: React.FC<TodoListViewProps> = ({
   todoList,
   onEdit,
-}) => <SimpleTable data={todoList} onRowClicked={onEdit} />
+}) => (
+  <SimpleTable
+    data={todoList}
+    headers={['id', 'title', 'completed']}
+    onRowClicked={onEdit}
+  />
+)
 
 export const TodoListRoute = () => {
   const { history } = useRouter()
